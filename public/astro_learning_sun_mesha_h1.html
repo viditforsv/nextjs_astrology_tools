@@ -1,0 +1,357 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .app { padding: 1.5rem 1rem; max-width: 680px; }
+  .stage-wrap { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+  .canvas-area { position: relative; width: 320px; height: 320px; flex-shrink: 0; }
+  canvas#astro { width: 320px; height: 320px; }
+  .info-panel { flex: 1; min-width: 200px; }
+  .layer-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 14px; margin-bottom: 10px; background: var(--color-background-primary); }
+  .layer-badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; margin-bottom: 6px; }
+  .badge-house { background: #1D9E7520; color: #0F6E56; }
+  .badge-rashi { background: #D85A3020; color: #993C1D; }
+  .badge-planet { background: #7F77DD20; color: #3C3489; }
+  .layer-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .layer-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .keywords { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .kw { font-size: 11px; padding: 2px 6px; border-radius: 3px; font-weight: 400; }
+  .kw-house { background: #E1F5EE; color: #085041; }
+  .kw-rashi { background: #FAECE7; color: #4A1B0C; }
+  .kw-planet { background: #EEEDFE; color: #26215C; }
+  .synthesis-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 14px; background: var(--color-background-secondary); margin-top: 10px; }
+  .synthesis-title { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .synthesis-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+  .controls { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .ctrl-btn { font-size: 12px; padding: 5px 12px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; }
+  .ctrl-btn:hover { background: var(--color-background-secondary); }
+  .ctrl-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+  .combo-label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 8px; }
+  .rotate-hint { font-size: 11px; color: var(--color-text-tertiary); margin-top: 6px; }
+  h2.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  @media (prefers-color-scheme: dark) {
+    .kw-house { background: #08504120; color: #9FE1CB; }
+    .kw-rashi { background: #99231D20; color: #F5C4B3; }
+    .kw-planet { background: #3C348920; color: #CECBF6; }
+    .badge-house { background: #08504140; color: #9FE1CB; }
+    .badge-rashi { background: #99231D40; color: #F5C4B3; }
+    .badge-planet { background: #3C348940; color: #CECBF6; }
+  }
+</style>
+
+<div class="app">
+  <h2 class="sr-only">Astrological layer explorer — Sun in House 1, Mesha Rashi. Three interactive concentric rings showing house, rashi, and planet energies.</h2>
+
+  <div class="combo-label">Sun in Mesha · House 1 (Lagna)</div>
+  <div class="rotate-hint">Rashi and planet rotate — house is stationary</div>
+
+  <div class="stage-wrap" style="margin-top:14px;">
+    <div class="canvas-area">
+      <canvas id="astro" width="640" height="640" style="width:320px;height:320px;"></canvas>
+    </div>
+
+    <div class="info-panel">
+      <div class="layer-card">
+        <div class="layer-badge badge-house">Layer 1 — House (fixed)</div>
+        <div class="layer-title">House 1 · Lagna</div>
+        <div class="layer-desc">Self, identity, body, personality, first impressions. The house of beginnings.</div>
+        <div class="keywords">
+          <span class="kw kw-house">Self</span>
+          <span class="kw kw-house">Body</span>
+          <span class="kw kw-house">Personality</span>
+          <span class="kw kw-house">Beginnings</span>
+          <span class="kw kw-house">Vitality</span>
+        </div>
+      </div>
+
+      <div class="layer-card">
+        <div class="layer-badge badge-rashi">Layer 2 — Rashi (orbits)</div>
+        <div class="layer-title">Mesha · Aries</div>
+        <div class="layer-desc">Fire sign. Mars-ruled. Cardinal. Aggressive, pioneer energy. Impulse and courage.</div>
+        <div class="keywords">
+          <span class="kw kw-rashi">Fire</span>
+          <span class="kw kw-rashi">Pioneer</span>
+          <span class="kw kw-rashi">Courage</span>
+          <span class="kw kw-rashi">Mars-ruled</span>
+          <span class="kw kw-rashi">Cardinal</span>
+        </div>
+      </div>
+
+      <div class="layer-card">
+        <div class="layer-badge badge-planet">Layer 3 — Planet (orbits)</div>
+        <div class="layer-title">Surya · Sun ☉</div>
+        <div class="layer-desc">Soul, authority, father, ego, government. Exalted in Mesha. Sattvic, fiery, royal.</div>
+        <div class="keywords">
+          <span class="kw kw-planet">Soul</span>
+          <span class="kw kw-planet">Authority</span>
+          <span class="kw kw-planet">Exalted</span>
+          <span class="kw kw-planet">Sattvic</span>
+          <span class="kw kw-planet">Royal</span>
+        </div>
+      </div>
+
+      <div class="synthesis-card">
+        <div class="synthesis-title">Synthesis — all 3 layers</div>
+        <div class="synthesis-text">
+          Sun is exalted in Mesha, and sits in the house of Self. This creates a powerfully confident, self-driven individual — a natural leader with strong physical vitality and an assertive personality. The ego expresses itself boldly, sometimes aggressively.
+        </div>
+      </div>
+
+      <div class="controls" style="margin-top:10px;">
+        <button class="ctrl-btn active" id="btn-animate" onclick="toggleAnim()">Pause rotation</button>
+        <button class="ctrl-btn" onclick="sendPrompt('Explain Sun in House 1 in Mesha Rashi in more depth — what are the strengths, challenges, and karmic themes? ↗')">Deep dive ↗</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('astro');
+const ctx = canvas.getContext('2d');
+const W = 640, H = 640, cx = 320, cy = 320;
+
+let angle = 0;
+let running = true;
+let raf;
+
+const TAU = Math.PI * 2;
+
+function hsl(h,s,l,a=1){ return `hsla(${h},${s}%,${l}%,${a})`; }
+
+const isDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+function getTheme() {
+  if(isDark()) return {
+    bg: 'transparent',
+    houseStroke: '#1D9E75', houseFill: '#04342C', houseText: '#9FE1CB',
+    rashiStroke: '#D85A30', rashiFill: '#4A1B0C', rashiText: '#F5C4B3',
+    planetGlow: '#EEEDFE', planetFill: '#534AB7', planetText: '#CECBF6',
+    spokes: 'rgba(255,255,255,0.07)', outerText: '#9FE1CB', midText: '#F5C4B3',
+    centerText: '#CECBF6', dashColor: 'rgba(255,255,255,0.12)'
+  };
+  return {
+    bg: 'transparent',
+    houseStroke: '#0F6E56', houseFill: '#E1F5EE', houseText: '#085041',
+    rashiStroke: '#993C1D', rashiFill: '#FAECE7', rashiText: '#4A1B0C',
+    planetGlow: '#EEEDFE', planetFill: '#7F77DD', planetText: '#26215C',
+    spokes: 'rgba(0,0,0,0.06)', outerText: '#085041', midText: '#4A1B0C',
+    centerText: '#3C3489', dashColor: 'rgba(0,0,0,0.1)'
+  };
+}
+
+function drawRing(r, stroke, fill, width, dash=[]) {
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, TAU);
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = width;
+  if(dash.length) ctx.setLineDash(dash); else ctx.setLineDash([]);
+  ctx.fillStyle = fill || 'none';
+  if(fill) ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function textOnCircle(text, r, angleDeg, color, size=18, weight=400) {
+  const a = (angleDeg - 90) * Math.PI/180;
+  const x = cx + r * Math.cos(a);
+  const y = cy + r * Math.sin(a);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.font = `${weight} ${size}px var(--font-sans, system-ui, sans-serif)`;
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 0, 0);
+  ctx.restore();
+}
+
+const houseDivisions = [
+  { house: 'H1', deg: 0, label: 'Lagna · Self' },
+  { house: 'H2', deg: 30, label: 'Wealth' },
+  { house: 'H3', deg: 60, label: 'Courage' },
+  { house: 'H4', deg: 90, label: 'Home' },
+  { house: 'H5', deg: 120, label: 'Children' },
+  { house: 'H6', deg: 150, label: 'Enemies' },
+  { house: 'H7', deg: 180, label: 'Partner' },
+  { house: 'H8', deg: 210, label: 'Death/Trans' },
+  { house: 'H9', deg: 240, label: 'Dharma' },
+  { house: 'H10', deg: 270, label: 'Karma' },
+  { house: 'H11', deg: 300, label: 'Gains' },
+  { house: 'H12', deg: 330, label: 'Liberation' },
+];
+
+const rashiSymbols = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+const rashiNames = ['Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrischika','Dhanu','Makara','Kumbha','Meena'];
+
+function draw(t) {
+  const T = getTheme();
+  ctx.clearRect(0, 0, W, H);
+
+  const outerR = 290, midR = 205, innerR = 115;
+
+  // ── House ring (static) ──
+  ctx.save();
+  drawRing(outerR, T.houseStroke, T.houseFill, 2.5);
+  drawRing(midR, T.rashiStroke, 'rgba(0,0,0,0)', 1.5);
+
+  // house spokes
+  for(let i=0; i<12; i++){
+    const a = (i*30 - 90) * Math.PI/180;
+    ctx.beginPath();
+    ctx.moveTo(cx + midR*Math.cos(a), cy + midR*Math.sin(a));
+    ctx.lineTo(cx + outerR*Math.cos(a), cy + outerR*Math.sin(a));
+    ctx.strokeStyle = T.houseStroke;
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([4,4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // house labels in outer ring
+  for(let i=0; i<12; i++){
+    const midDeg = i*30 + 15;
+    const labelR = (outerR + midR)/2;
+    const isH1 = i === 0;
+    const a = (midDeg - 90) * Math.PI/180;
+    const x = cx + labelR * Math.cos(a);
+    const y = cy + labelR * Math.sin(a);
+    ctx.save();
+    if(isH1) {
+      ctx.beginPath();
+      ctx.arc(x, y, 24, 0, TAU);
+      ctx.fillStyle = T.houseStroke;
+      ctx.fill();
+    }
+    ctx.font = `500 ${isH1?17:14}px var(--font-sans, system-ui, sans-serif)`;
+    ctx.fillStyle = isH1 ? '#fff' : T.outerText;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(houseDivisions[i].house, x, y);
+    ctx.restore();
+  }
+  ctx.restore();
+
+  // ── Rashi ring (rotates) ──
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle * 0.3);
+  ctx.translate(-cx, -cy);
+  drawRing(midR, T.rashiStroke, 'rgba(0,0,0,0)', 2);
+  drawRing(innerR, T.rashiStroke, 'rgba(0,0,0,0)', 1);
+
+  for(let i=0; i<12; i++){
+    const midDeg = i*30 + 15;
+    const labelR = (midR + innerR)/2;
+    const a = (midDeg - 90) * Math.PI/180;
+    const x = cx + labelR * Math.cos(a);
+    const y = cy + labelR * Math.sin(a);
+    const isMesha = i === 0;
+    ctx.save();
+    if(isMesha) {
+      ctx.beginPath();
+      ctx.arc(x, y, 26, 0, TAU);
+      ctx.fillStyle = T.rashiStroke;
+      ctx.fill();
+    }
+    ctx.font = `500 ${isMesha?22:18}px var(--font-sans, system-ui, sans-serif)`;
+    ctx.fillStyle = isMesha ? '#fff' : T.midText;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(rashiSymbols[i], x, y);
+    ctx.restore();
+
+    // rashi spokes
+    const spokeA = (i*30 - 90) * Math.PI/180;
+    ctx.beginPath();
+    ctx.moveTo(cx + innerR*Math.cos(spokeA), cy + innerR*Math.sin(spokeA));
+    ctx.lineTo(cx + midR*Math.cos(spokeA), cy + midR*Math.sin(spokeA));
+    ctx.strokeStyle = T.rashiStroke;
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([3,5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.restore();
+
+  // ── Planet (inner, orbits faster) ──
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle * 0.9);
+  ctx.translate(-cx, -cy);
+
+  // orbit path
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR - 30, 0, TAU);
+  ctx.strokeStyle = T.dashColor;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4,6]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Sun position at top of orbit
+  const sunR = innerR - 30;
+  const sx = cx;
+  const sy = cy - sunR;
+
+  // Sun glow
+  const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, 36);
+  grad.addColorStop(0, isDark() ? 'rgba(255,215,0,0.35)' : 'rgba(255,165,0,0.25)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.arc(sx, sy, 36, 0, TAU);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Sun circle
+  ctx.beginPath();
+  ctx.arc(sx, sy, 22, 0, TAU);
+  ctx.fillStyle = isDark() ? '#EF9F27' : '#BA7517';
+  ctx.fill();
+  ctx.strokeStyle = isDark() ? '#FAC775' : '#633806';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Sun glyph ☉
+  ctx.font = '500 22px var(--font-sans, system-ui, sans-serif)';
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('☉', sx, sy + 1);
+
+  ctx.restore();
+
+  // ── Center circle ──
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR - 65, 0, TAU);
+  ctx.fillStyle = isDark() ? '#1a1a2e' : '#F1EFE8';
+  ctx.fill();
+  ctx.strokeStyle = T.planetFill;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.font = '500 16px var(--font-sans, system-ui, sans-serif)';
+  ctx.fillStyle = T.centerText;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('H1', cx, cy - 16);
+  ctx.font = '400 13px var(--font-sans, system-ui, sans-serif)';
+  ctx.fillText('Mesha', cx, cy + 2);
+  ctx.font = '500 18px var(--font-sans, system-ui, sans-serif)';
+  ctx.fillText('☉', cx, cy + 20);
+}
+
+function loop(t) {
+  if(running) angle += 0.008;
+  draw(angle);
+  raf = requestAnimationFrame(loop);
+}
+
+function toggleAnim() {
+  running = !running;
+  const btn = document.getElementById('btn-animate');
+  btn.textContent = running ? 'Pause rotation' : 'Resume rotation';
+  btn.classList.toggle('active', running);
+}
+
+requestAnimationFrame(loop);
+</script>
