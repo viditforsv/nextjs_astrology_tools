@@ -285,26 +285,10 @@ export default function AstroLearner() {
                   </button>
 
                   {expanded && (
-                    <div className="px-4 pb-4 space-y-3 border-t border-zinc-100 dark:border-zinc-800">
-                      {/* Visual layers */}
-                      <div className="pt-3 flex flex-col sm:flex-row gap-4 items-center sm:items-start">
-                        <div className="shrink-0 rounded-lg bg-zinc-50 dark:bg-zinc-900 p-3 border border-zinc-200 dark:border-zinc-800">
-                          <div className="text-[10px] uppercase tracking-wider font-medium text-zinc-500 dark:text-zinc-400 mb-2 text-center">
-                            Visual layers
-                          </div>
-                          <VisualLayers
-                            planetId={pl.planetId}
-                            rashiId={rashiId}
-                            houseNum={pl.house}
-                            size={220}
-                          />
-                        </div>
-                        <Legend />
-                      </div>
-
-                      {/* Synthesis */}
-                      <div className="pt-1">
-                        <div className="text-[11px] uppercase tracking-wider font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">
+                    <div className="px-4 pb-4 space-y-4 border-t border-zinc-100 dark:border-zinc-800">
+                      {/* 1. SYNTHESIS — prime position */}
+                      <div className="pt-4">
+                        <div className="text-[11px] uppercase tracking-wider font-medium text-zinc-500 dark:text-zinc-400 mb-2">
                           Synthesis
                         </div>
                         {quizMode && !revealed ? (
@@ -313,7 +297,7 @@ export default function AstroLearner() {
                               How would <strong>{planet.english}</strong> behave in{" "}
                               <strong>{rashi.english}</strong> in House{" "}
                               <strong>{house.num}</strong>? Think about dignity, element fit,
-                              and house theme.
+                              and house theme — then reveal.
                             </p>
                             <Button
                               size="sm"
@@ -327,41 +311,89 @@ export default function AstroLearner() {
                             </Button>
                           </div>
                         ) : (
-                          <>
-                            <p className="text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+                          <div className="space-y-3">
+                            <p className="text-base font-medium leading-snug text-zinc-900 dark:text-zinc-100">
+                              {synth.oneLine}
+                            </p>
+                            <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
                               {synth.paragraph}
                             </p>
-                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
+                            <div className="grid sm:grid-cols-2 gap-3 pt-1">
+                              <div className="rounded-md border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/40 dark:bg-emerald-900/10 p-3">
+                                <div className="text-[10px] uppercase tracking-wider font-semibold text-emerald-800 dark:text-emerald-300 mb-1.5">
+                                  Strengths
+                                </div>
+                                <ul className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed list-disc list-outside pl-4 space-y-1">
+                                  {synth.strengths.map((s, i) => (
+                                    <li key={i}>{s}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              <div className="rounded-md border border-rose-200 dark:border-rose-900/50 bg-rose-50/40 dark:bg-rose-900/10 p-3">
+                                <div className="text-[10px] uppercase tracking-wider font-semibold text-rose-800 dark:text-rose-300 mb-1.5">
+                                  Challenges
+                                </div>
+                                <ul className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed list-disc list-outside pl-4 space-y-1">
+                                  {synth.challenges.map((c, i) => (
+                                    <li key={i}>{c}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400">
                               <strong>Dignity:</strong> {synth.dignityNote}
                             </p>
-                          </>
+                          </div>
                         )}
                       </div>
 
-                      {/* Layer cards */}
-                      <div className="grid sm:grid-cols-3 gap-2">
-                        <MiniLayer
-                          label="House"
-                          color="emerald"
-                          title={`H${house.num} · ${house.sanskrit}`}
-                          desc={house.description}
-                          keywords={house.keywords}
-                        />
-                        <MiniLayer
-                          label="Rashi"
-                          color="rose"
-                          title={`${rashi.sanskrit} (${rashi.english})`}
-                          desc={rashi.description}
-                          keywords={rashi.keywords}
-                        />
-                        <MiniLayer
-                          label="Planet"
-                          color="indigo"
-                          title={`${planet.sanskrit} (${planet.english})`}
-                          desc={planet.description}
-                          keywords={planet.keywords}
-                        />
+                      {/* 2. VISUAL + MINI-LAYERS — supporting visualization */}
+                      <div className="grid lg:grid-cols-[260px_1fr] gap-4 items-start pt-2 border-t border-zinc-100 dark:border-zinc-900">
+                        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900 p-3 border border-zinc-200 dark:border-zinc-800">
+                          <div className="text-[10px] uppercase tracking-wider font-medium text-zinc-500 dark:text-zinc-400 mb-2 text-center">
+                            Visual layers
+                          </div>
+                          <VisualLayers
+                            planetId={pl.planetId}
+                            rashiId={rashiId}
+                            houseNum={pl.house}
+                            size={220}
+                          />
+                        </div>
+                        <div className="grid sm:grid-cols-3 gap-2">
+                          <MiniLayer
+                            label="House"
+                            color="emerald"
+                            title={`H${house.num} · ${house.sanskrit}`}
+                            desc={house.description}
+                            keywords={house.keywords}
+                          />
+                          <MiniLayer
+                            label="Rashi"
+                            color="rose"
+                            title={`${rashi.sanskrit} (${rashi.english})`}
+                            desc={rashi.description}
+                            keywords={rashi.keywords}
+                          />
+                          <MiniLayer
+                            label="Planet"
+                            color="indigo"
+                            title={`${planet.sanskrit} (${planet.english})`}
+                            desc={planet.description}
+                            keywords={planet.keywords}
+                          />
+                        </div>
                       </div>
+
+                      {/* 3. LEGEND — collapsed at bottom */}
+                      <details className="pt-1 border-t border-zinc-100 dark:border-zinc-900">
+                        <summary className="text-[11px] text-zinc-500 dark:text-zinc-400 cursor-pointer pt-2 hover:text-zinc-700 dark:hover:text-zinc-300 select-none">
+                          How to read the visual layers
+                        </summary>
+                        <div className="pt-2">
+                          <Legend />
+                        </div>
+                      </details>
 
                       <div className="flex justify-end pt-1">
                         <Button
